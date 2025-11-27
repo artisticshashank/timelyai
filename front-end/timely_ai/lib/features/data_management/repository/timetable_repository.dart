@@ -16,7 +16,7 @@ class TimetableRepository {
   Future<Map<String, dynamic>> generateTimetable() async {
     // The server URL for your local Python backend.
     // 10.0.2.2 is a special IP for the Android emulator to access the host machine (localhost).
-    const String serverUrl = 'http://10.228.228.121:5000/generate-timetable';
+    const String serverUrl = 'http://10.211.0.121:5000/generate-timetable';
 
     // Get the current state (all our lists of data) from the HomeController.
     final homeState = _ref.read(homeControllerProvider);
@@ -26,9 +26,11 @@ class TimetableRepository {
       'instructors': homeState.instructors.map((e) => e.toJson()).toList(),
       'courses': homeState.courses.map((e) => e.toJson()).toList(),
       'rooms': homeState.rooms.map((e) => e.toJson()).toList(),
-      'studentGroups': homeState.studentGroups.map((e) => e.toJson()).toList(),
+      'student_groups': homeState.studentGroups.map((e) => e.toJson()).toList(),
+
       'days': homeState.days,
       'timeslots': homeState.timeslots,
+      'settings': homeState.settings,
     });
 
     try {

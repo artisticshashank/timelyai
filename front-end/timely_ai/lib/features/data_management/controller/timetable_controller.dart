@@ -12,6 +12,7 @@ class HomeState {
   final List<StudentGroup> studentGroups;
   final List<String> days;
   final List<String> timeslots;
+  final Map<String, dynamic> settings;
 
   HomeState({
     required this.instructors,
@@ -20,6 +21,7 @@ class HomeState {
     required this.studentGroups,
     required this.days,
     required this.timeslots,
+    this.settings = const {},
   });
 
   // A copyWith method to easily create a new state object with updated values.
@@ -28,6 +30,7 @@ class HomeState {
     List<Course>? courses,
     List<Room>? rooms,
     List<StudentGroup>? studentGroups,
+    Map<String, dynamic>? settings,
   }) {
     return HomeState(
       instructors: instructors ?? this.instructors,
@@ -36,6 +39,7 @@ class HomeState {
       studentGroups: studentGroups ?? this.studentGroups,
       days: days,
       timeslots: timeslots,
+      settings: settings ?? this.settings,
     );
   }
 }
@@ -47,79 +51,27 @@ class HomeController extends StateNotifier<HomeState> {
   // Initializes the state with sample data.
   static HomeState _getInitialState() {
     return HomeState(
-      instructors: [
-        Instructor(
-          id: 'inst_1',
-          name: 'Dr. Smith',
-          availability: {
-            'Monday': [1, 1, 1, 0],
-            'Tuesday': [1, 1, 1, 1],
-            'Wednesday': [1, 1, 0, 0],
-            'Thursday': [1, 1, 1, 1],
-            'Friday': [0, 0, 1, 1],
-          },
-        ),
-        Instructor(
-          id: 'inst_2',
-          name: 'Prof. Jones',
-          availability: {
-            'Monday': [1, 1, 1, 1],
-            'Tuesday': [0, 0, 1, 1],
-            'Wednesday': [1, 1, 1, 1],
-            'Thursday': [1, 0, 1, 0],
-            'Friday': [1, 1, 1, 1],
-          },
-        ),
+      instructors: [],
+      courses: [],
+      rooms: [],
+      studentGroups: [],
+      days: [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
       ],
-      courses: [
-        Course(
-          id: 'c_1',
-          name: 'CS101',
-          lectureHours: 3,
-          labHours: 0,
-          qualifiedInstructors: ['inst_1'],
-          equipment: ['Projector'],
-        ),
-        Course(
-          id: 'c_2',
-          name: 'MA203',
-          lectureHours: 4,
-          labHours: 0,
-          qualifiedInstructors: ['inst_2'],
-        ),
-        Course(
-          id: 'c_3',
-          name: 'PHY-LAB',
-          lectureHours: 0,
-          labHours: 2,
-          qualifiedInstructors: ['inst_1'],
-          equipment: ['Lab Kit'],
-        ),
+      timeslots: [
+        '08:30 AM - 09:30 AM',
+        '09:30 AM - 10:30 AM',
+        '11:00 AM - 12:00 PM',
+        '12:00 PM - 01:00 PM',
+        '02:00 PM - 03:00 PM',
+        '03:00 PM - 04:00 PM',
+        '04:00 PM - 05:00 PM',
       ],
-      rooms: [
-        Room(
-          id: 'Room 101',
-          capacity: 50,
-          type: 'Lecture Hall',
-          equipment: ['Projector'],
-        ),
-        Room(id: 'Room 102', capacity: 50, type: 'Lecture Hall'),
-        Room(
-          id: 'Physics Lab',
-          capacity: 30,
-          type: 'Lab',
-          equipment: ['Lab Kit', 'Oscilloscope'],
-        ),
-      ],
-      studentGroups: [
-        StudentGroup(
-          id: 'sg_1',
-          size: 45,
-          enrolledCourses: ['c_1', 'c_2', 'c_3'],
-        ),
-      ],
-      days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-      timeslots: ['09-10', '10-11', '11-12', '13-14'],
     );
   }
 
@@ -201,6 +153,11 @@ class HomeController extends StateNotifier<HomeState> {
     final newList = List<StudentGroup>.from(state.studentGroups)
       ..removeAt(index);
     state = state.copyWith(studentGroups: newList);
+  }
+
+  // --- METHODS FOR SETTINGS MANIPULATION ---
+  void updateSettings(Map<String, dynamic> newSettings) {
+    state = state.copyWith(settings: newSettings);
   }
 }
 
