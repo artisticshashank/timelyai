@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timely_ai/features/PDF_creation/pdf_generation_service.dart';
 import 'package:timely_ai/features/data_management/controller/timetable_controller.dart';
+import 'package:timely_ai/models/StudentGroupModel.dart';
 import 'package:timely_ai/features/data_management/repository/timetable_repository.dart';
 import 'package:timely_ai/shared/widgets/glass_card.dart';
 import 'package:timely_ai/shared/widgets/saas_scaffold.dart';
@@ -162,15 +163,57 @@ class _TimetableViewScreenState extends ConsumerState<TimetableViewScreen> {
           child: ElevatedButton.icon(
             onPressed: () {
               final homeState = ref.read(homeControllerProvider);
-              PdfGenerator.generateAndPreview(
-                schedule: filteredSchedule,
-                courses: homeState.courses,
-                instructors: homeState.instructors,
-                subtitle:
-                    _filterType != 'Show All' && _selectedFilterValue != null
-                    ? '$_filterType: $_selectedFilterValue'
-                    : '',
-              );
+              if (_filterType == 'Instructor' &&
+                  _selectedFilterValue != null &&
+                  _selectedFilterValue != 'All') {
+                PdfGenerator.generateFacultyPdf(
+                  schedule: filteredSchedule,
+                  courses: homeState.courses,
+                  timeSlots: homeState.timeslots,
+                  facultyName: _selectedFilterValue!,
+                );
+              } else if (_filterType == 'Student Group' &&
+                  _selectedFilterValue != null &&
+                  _selectedFilterValue != 'All') {
+                String preferredRoom = '';
+                try {
+                  final g = homeState.studentGroups.firstWhere(
+                    (element) => element.id == _selectedFilterValue,
+                  );
+                  preferredRoom = g.preferredRoomId ?? '';
+                } catch (_) {}
+
+                String section = 'A';
+                if (_selectedFilterValue!.isNotEmpty) {
+                  final parts = _selectedFilterValue!.split(' ');
+                  if (parts.isNotEmpty) {
+                    final last = parts.last;
+                    if (last.length == 1 &&
+                        RegExp(r'[A-Za-z]').hasMatch(last)) {
+                      section = last;
+                    }
+                  }
+                }
+
+                PdfGenerator.generateStudentPdf(
+                  schedule: filteredSchedule,
+                  courses: homeState.courses,
+                  timeSlots: homeState.timeslots,
+                  studentGroupName: _selectedFilterValue!,
+                  section: section,
+                  preferredRoom: preferredRoom,
+                );
+              } else {
+                PdfGenerator.generateAndPreview(
+                  schedule: filteredSchedule,
+                  courses: homeState.courses,
+                  instructors: homeState.instructors,
+                  subtitle:
+                      _filterType != 'Show All' && _selectedFilterValue != null
+                      ? '$_filterType: $_selectedFilterValue'
+                      : '',
+                );
+              }
             },
             icon: const Icon(Icons.download, size: 18, color: Colors.black),
             label: const Text(
