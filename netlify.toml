@@ -1,0 +1,14 @@
+[build]
+  base = "front-end/timely_ai"
+  publish = "build/web"
+  command = """
+    if [ ! -d "flutter" ]; then
+      git clone https://github.com/flutter/flutter.git -b stable
+    fi
+    export PATH="$PATH:`pwd`/flutter/bin"
+    flutter doctor
+    flutter build web
+  """
+
+[build.environment]
+  FLUTTER_CHANNEL = "stable"
